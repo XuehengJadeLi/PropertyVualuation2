@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cesium Basic Test</title>
+  
+  <script src="https://cesium.com/downloads/cesiumjs/releases/1.90.0/Build/Cesium/Cesium.js"></script>
+  <link href="https://cesium.com/downloads/cesiumjs/releases/1.90.0/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  
+  <style>
+    body, html { 
+      margin: 0; 
+      padding: 0; 
+      height: 100%; 
+      overflow: hidden; 
+    }
+    #cesiumContainer { 
+      width: 100%; 
+      height: 100%; 
+    }
+    #debugInfo {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      background: white;
+      padding: 10px;
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <div id="debugInfo">Loading Cesium...</div>
+  <div id="cesiumContainer"></div>
+  
+  <script>
+    const debugEl = document.getElementById('debugInfo');
+    
+    try {
+      debugEl.textContent = "Setting access token...";
+      Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZDE5ZTQ0Ni00ZDU0LTQ3MDgtYWQ5MC01N2EyNDg5MTVmZjgiLCJpZCI6Mjc3MzY1LCJpYXQiOjE3Mzk5NzA3MDF9.rHw3crY1W96qSzIdAwLE4lmB3e3YS0c5rvfiigf4xBs';
+      
+      debugEl.textContent = "Creating viewer...";
+      const viewer = new Cesium.Viewer('cesiumContainer', {
+        baseLayerPicker: false,
+        timeline: false,
+        animation: false
+      });
+      
+      debugEl.textContent = "Viewer created successfully! Setting camera...";
+      
+      viewer.camera.setView({
+        destination: Cesium.Cartesian3.fromDegrees(4.440982, 51.910920, 5000)
+      });
+      
+      debugEl.textContent = "Camera position set. All done!";
+    } catch (error) {
+      debugEl.textContent = "Error: " + error.message;
+      console.error(error);
+    }
+  </script>
+</body>
+</html>

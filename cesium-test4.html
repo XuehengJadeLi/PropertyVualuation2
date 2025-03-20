@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Local Cesium 3D Tiles Test</title>
+  
+  <!-- Use local Cesium files instead of CDN -->
+  <script src="./Cesium/Build/Cesium/Cesium.js"></script>
+  <link href="./Cesium/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
+  
+  <style>
+    html, body, #cesiumContainer {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+    #statusBar {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 1000;
+      background: white;
+      padding: 10px;
+      border-radius: 5px;
+    }
+  </style>
+</head>
+<body>
+  <div id="statusBar">Loading Cesium...</div>
+  <div id="cesiumContainer"></div>
+  
+  <script>
+    // Get the status bar element
+    const statusBar = document.getElementById('statusBar');
+    
+    // Wait for the page to fully load
+    window.onload = function() {
+      try {
+        statusBar.textContent = "Setting access token...";
+        
+        // Your Cesium Ion access token
+        Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIzZDE5ZTQ0Ni00ZDU0LTQ3MDgtYWQ5MC01N2EyNDg5MTVmZjgiLCJpZCI6Mjc3MzY1LCJpYXQiOjE3Mzk5NzA3MDF9.rHw3crY1W96qSzIdAwLE4lmB3e3YS0c5rvfiigf4xBs';
+        
+        statusBar.textContent = "Creating viewer...";
+        
+        // Create the Cesium Viewer with minimal settings
+        const viewer = new Cesium.Viewer('cesiumContainer', {
+          animation: false,
+          baseLayerPicker: false,
+          fullscreenButton: false,
+          geocoder: false,
+          homeButton: false,
+          infoBox: false,
+          sceneModePicker: false,
+          timeline: false
+        });
+        
+        statusBar.textContent = "Setting camera position...";
+        
+        // Set camera position to Rotterdam coordinates
+        viewer.camera.setView({
+          destination: Cesium.Cartesian3.fromDegrees(4.440982, 51.910920, 1000)
+        });
+        
+        statusBar.textContent = "Loading 3D tileset...";
+        
+        // Create a tileset pointing to your Cesium Ion asset
+        const tileset = new Cesium.Cesium3DTileset({
+          url: Cesium.IonResource.fromAssetId(3224749)
+        });
+        
+        // Add the tileset to the scene
+        viewer.scene.primitives.add(tileset);
+        
+        // When the tileset is loaded, zoom to it
+        tileset.readyPromise.then(function() {
+          statusBar.textContent = "Tileset loaded successfully!";
+          viewer.zoomTo(tileset);
+        }).catch(function(error) {
+          statusBar.textContent = "Error loading tileset: " + error;
+          console.error(error);
+        });
+        
+      } catch (error) {
+        statusBar.textContent = "Error: " + error.message;
+        console.error(error);
+      }
+    };
+  </script>
+</body>
+</html>
