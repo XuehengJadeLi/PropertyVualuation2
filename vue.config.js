@@ -1,28 +1,42 @@
-// vue.config.js
-const webpack = require('webpack');
-const path = require('path');
+const { defineConfig } = require('@vue/cli-service')
+const path = require('path')
+const webpack = require('webpack')
+const CopyWebpackPlugin = require('copy-webpack-plugin')
 
-module.exports = {
+module.exports = defineConfig({
+  transpileDependencies: true,
   configureWebpack: {
     plugins: [
       // Copy Cesium Assets, Widgets, and Workers to a static directory
+      new CopyWebpackPlugin({
+        patterns: [
+          {
+            from: 'node_modules/cesium/Build/Cesium/Workers',
+            to: 'cesium/Workers'
+          },
+          {
+            from: 'node_modules/cesium/Build/Cesium/ThirdParty',
+            to: 'cesium/ThirdParty'
+          },
+          {
+            from: 'node_modules/cesium/Build/Cesium/Assets',
+            to: 'cesium/Assets'
+          },
+          {
+            from: 'node_modules/cesium/Build/Cesium/Widgets',
+            to: 'cesium/Widgets'
+          }
+        ]
+      }),
       new webpack.DefinePlugin({
-        CESIUM_BASE_URL: JSON.stringify('')
+        // Define relative base path in cesium for loading assets
+        CESIUM_BASE_URL: JSON.stringify('./cesium')
       })
     ],
     resolve: {
       alias: {
-        // Cesium module name
-        cesium: path.resolve(__dirname, 'node_modules/cesium')
+        '@': path.resolve(__dirname, 'src')
       }
-    },
-    module: {
-      rules: [
-        {
-          test: /\.css$/,
-          use: ['style-loader', 'css-loader']
-        }
-      ]
     }
   }
-};
+})
